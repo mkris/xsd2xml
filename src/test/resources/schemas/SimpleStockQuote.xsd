@@ -1,0 +1,153 @@
+<!--
+  ~ Copyright (c) 2010-2014 Stratumsoft Technologies Pvt. Ltd.
+  ~
+  ~ This file (SimpleStockQuote.xsd) is part of xsd2xml.
+  ~
+  ~ xsd2xml is a Java program to generate XML instances from an XML Schema document
+  ~
+  ~ xsd2xml is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation; either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ xsd2xml is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program; If not, see <http://www.gnu.org/licenses/>.
+  ~
+  ~ To use xsd2xml in your non-GPL licensed software, contact Stratumsoft Technologies
+  ~ support at support@stratumsoft.com or visit http://www.stratumsoft.com to obtain
+  ~ a commercial license.
+  -->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://services.samples/xsd" attributeFormDefault="qualified"
+    elementFormDefault="unqualified" targetNamespace="http://services.samples/xsd">
+    <xs:element name="getFullQuote">
+        <xs:complexType>
+
+            <xs:sequence>
+                <xs:element name="request" nillable="true" type="ns:GetFullQuote"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="GetFullQuote" type="ns:GetFullQuote"/>
+    <xs:complexType name="GetFullQuote">
+        <xs:sequence>
+            <xs:element name="symbol" nillable="true" type="xs:string"/>
+
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="getFullQuoteResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="return" nillable="true" type="ns:GetFullQuoteResponse"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetFullQuoteResponse" type="ns:GetFullQuoteResponse"/>
+    <xs:complexType name="GetFullQuoteResponse">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" name="tradeHistory" nillable="true"
+                type="ns:TradingDay"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="TradingDay" type="ns:TradingDay"/>
+    <xs:complexType name="TradingDay">
+        <xs:sequence>
+
+            <xs:element name="day" type="xs:int"/>
+            <xs:element name="quote" nillable="true" type="ns:GetQuoteResponse"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="GetQuoteResponse" type="ns:GetQuoteResponse"/>
+    <xs:complexType name="GetQuoteResponse">
+        <xs:sequence>
+            <xs:element name="change" type="xs:double"/>
+            <xs:element name="earnings" type="xs:double"/>
+
+            <xs:element name="high" type="xs:double"/>
+            <xs:element name="last" type="xs:double"/>
+            <xs:element name="lastTradeTimestamp" nillable="true" type="xs:string"/>
+            <xs:element name="low" type="xs:double"/>
+            <xs:element name="marketCap" type="xs:double"/>
+            <xs:element name="name" nillable="true" type="xs:string"/>
+            <xs:element name="open" type="xs:double"/>
+            <xs:element name="peRatio" type="xs:double"/>
+            <xs:element name="percentageChange" type="xs:double"/>
+
+            <xs:element name="prevClose" type="xs:double"/>
+            <xs:element name="symbol" nillable="true" type="xs:string"/>
+            <xs:element name="volume" type="xs:int"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="getMarketActivity">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="request" nillable="true" type="ns:GetMarketActivity"/>
+
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="GetMarketActivity" type="ns:GetMarketActivity"/>
+    <xs:complexType name="GetMarketActivity">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" name="symbols" nillable="true" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="getMarketActivityResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="return" nillable="true" type="ns:GetMarketActivityResponse"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="GetMarketActivityResponse" type="ns:GetMarketActivityResponse"/>
+    <xs:complexType name="GetMarketActivityResponse">
+
+        <xs:sequence/>
+    </xs:complexType>
+    <xs:element name="getQuote">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="request" nillable="true" type="ns:GetQuote"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetQuote" type="ns:GetQuote"/>
+    <xs:complexType name="GetQuote">
+        <xs:sequence>
+            <xs:element name="symbol" nillable="true" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="getQuoteResponse">
+        <xs:complexType>
+            <xs:sequence>
+
+                <xs:element name="return" nillable="true" type="ns:GetQuoteResponse"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="placeOrder">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="order" nillable="true" type="ns:PlaceOrder"/>
+            </xs:sequence>
+
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="PlaceOrder" type="ns:PlaceOrder"/>
+    <xs:complexType name="PlaceOrder">
+        <xs:sequence>
+            <xs:element name="price" type="xs:double"/>
+            <xs:element name="quantity" type="xs:int"/>
+            <xs:element name="symbol" nillable="true" type="xs:string"/>
+        </xs:sequence>
+
+    </xs:complexType>
+</xs:schema>

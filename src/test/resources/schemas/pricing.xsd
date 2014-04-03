@@ -1,0 +1,230 @@
+<!--
+  ~ Copyright (c) 2010-2014 Stratumsoft Technologies Pvt. Ltd.
+  ~
+  ~ This file (pricing.xsd) is part of xsd2xml.
+  ~
+  ~ xsd2xml is a Java program to generate XML instances from an XML Schema document
+  ~
+  ~ xsd2xml is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation; either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ xsd2xml is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program; If not, see <http://www.gnu.org/licenses/>.
+  ~
+  ~ To use xsd2xml in your non-GPL licensed software, contact Stratumsoft Technologies
+  ~ support at support@stratumsoft.com or visit http://www.stratumsoft.com to obtain
+  ~ a commercial license.
+  -->
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+<xsd:attribute name="currency"
+               type="xsd:token"
+               fixed="U S Dollars">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            U S Dollars are the only currency
+            currently allowed.  This attribute
+            is a great example of using "ref"
+            (elsewhere), but is not set up well
+            for extending to other currencies
+            later.  This should really be a
+            type that keeps getting restricted.
+        </xsd:documentation>
+    </xsd:annotation>
+</xsd:attribute>
+
+<xsd:attributeGroup name="saleAttributeGroup"
+                    id="pricing.sale.ag">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            Anything that is on sale (or free,
+            which is a type of sale) must
+            have an authorization defined.
+            This is someone's name,
+            initials, ID, etc.
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="employeeAuthorization" type="xsd:token"/>
+    <xsd:attribute name="managerAuthorization" type="xsd:token"/>
+</xsd:attributeGroup>
+
+<xsd:simpleType name="currencyAmountType"
+                id="pricing.currencyAmount.sType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            Limit all transactions to less than
+            500,000.00 of any currency
+            This can be represented as NNNNNN.NN
+            or eight total digits, two of which are
+            after the decimal point.
+
+            *********************************************
+               Note that the W3C XML Schema
+               Recommendation does not support
+               non-instantiable simple types.
+
+               This simple type is conceptually
+               not instantiable.  This type is not
+               intended to be used directly, only
+               indirectly, such as via the ...DollarType
+               simple types.
+            *********************************************
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:decimal">
+        <xsd:totalDigits value="8" fixed="true"/>
+        <xsd:fractionDigits value="2" fixed="true"/>
+        <xsd:minExclusive value="0.00" fixed="true"/>
+        <xsd:maxInclusive value="500000.00" fixed="true"/>
+    </xsd:restriction>
+</xsd:simpleType>
+
+<xsd:simpleType name="restrictedDollarAmountType"
+                id="pricing.restrictedDollarAmount.sType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            Nothing sells for less than $1 or
+            greater than or equal to $10,000.00.
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="currencyAmountType">
+        <xsd:minInclusive value="1.00"
+                          fixed="true"/>
+        <xsd:maxExclusive value="10000.00"
+                          fixed="true"/>
+    </xsd:restriction>
+</xsd:simpleType>
+
+<xsd:complexType name="dollarPriceType"
+                 final="restriction"
+                 block="restriction"
+                 abstract="true"
+                 id="dollarPriceType.pricing.cType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            Currently, currency is limited to
+            U S Dollars. Note that this type is
+            non-instantiable.  A derived type must be
+            defined that sets the range.
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+        <xsd:extension base="restrictedDollarAmountType">
+            <xsd:attribute ref="currency"/>
+        </xsd:extension>
+    </xsd:simpleContent>
+</xsd:complexType>
+
+<xsd:complexType name="fullPriceType"
+                 block="#all"
+                 final="#all"
+                 id="fullPriceType.pricing.cType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            The pricing element for all items
+            sold at full price have no elements
+            or attributes.  The price is simply
+            the amount, stored in the value
+            of the element.
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+        <xsd:extension base="dollarPriceType"/>
+    </xsd:simpleContent>
+</xsd:complexType>
+
+<xsd:complexType name="freePriceType"
+                 block="#all"
+                 final="#all"
+                 id="freePriceType.pricing.cType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            Anything that is free has no
+            value (i.e., price), but must
+            have an authorization code.
+            This is a complex type with
+            "empty" content.
+                -- Shorthand Notation --
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attributeGroup ref="saleAttributeGroup"/>
+</xsd:complexType>
+
+<xsd:complexType name="salePriceType"
+                 block="#all"
+                 final="extension"
+                 id="salePriceType.pricing.cType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            Anything on sale must have a price
+            and an authorization
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+        <xsd:extension base="dollarPriceType">
+            <xsd:attributeGroup ref="saleAttributeGroup"/>
+        </xsd:extension>
+    </xsd:simpleContent>
+</xsd:complexType>
+
+<xsd:complexType name="clearancePriceType"
+                 block="#all"
+                 final="#all"
+                 id="clearancePriceType.pricing.cType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            Anything on sale must have a price
+            and an authorization
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent id="cpt.simpleContent">
+        <xsd:restriction base="salePriceType">
+            <xsd:maxInclusive value="10.00"/>  
+            <xsd:attribute name="employeeAuthorization" type="xsd:token" use="prohibited"/>
+        </xsd:restriction>
+    </xsd:simpleContent>
+</xsd:complexType>
+
+<xsd:group name="priceGroup" id="priceGroup.group">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            A price is any one of the following:
+                * Full Price (with amount)
+                * Sale Price (with amount and authorization)
+                * Clearance Price (with amount and authorization)
+                * Free (with authorization)
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice id="pg.choice">
+        <xsd:element name="fullPrice"
+                     type="fullPriceType"/>
+        <xsd:element name="salePrice"
+                     type="salePriceType"/>
+        <xsd:element name="clearancePrice"
+                     type="clearancePriceType"/>
+        <xsd:element name="freePrice" type="freePriceType"/>
+    </xsd:choice>
+</xsd:group>
+    
+    <xsd:element name="price">
+        <xsd:complexType>
+            <xsd:choice>
+                <xsd:element name="fullPrice" type="fullPriceType"/>
+                <xsd:element name="salePrice" type="salePriceType"/>
+                <xsd:element name="clearancePrice" type="clearancePriceType"/>
+                <xsd:element name="freePrice" type="freePriceType"/>
+            </xsd:choice>
+        </xsd:complexType>
+    </xsd:element>
+    
+    <xsd:element name="testabstract" type="dollarPriceType"></xsd:element>
+
+</xsd:schema>

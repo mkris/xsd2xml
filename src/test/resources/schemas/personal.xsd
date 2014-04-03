@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2010-2014 Stratumsoft Technologies Pvt. Ltd.
+  ~
+  ~ This file (personal.xsd) is part of xsd2xml.
+  ~
+  ~ xsd2xml is a Java program to generate XML instances from an XML Schema document
+  ~
+  ~ xsd2xml is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation; either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ xsd2xml is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program; If not, see <http://www.gnu.org/licenses/>.
+  ~
+  ~ To use xsd2xml in your non-GPL licensed software, contact Stratumsoft Technologies
+  ~ support at support@stratumsoft.com or visit http://www.stratumsoft.com to obtain
+  ~ a commercial license.
+  -->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://example.com" xmlns="http://example.com">
+
+    <xs:element name="personnel">
+        <xs:annotation>
+            <xs:documentation>Defines the personnel as a collection of person elements.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="person" minOccurs="1" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+        <xs:unique name="unique1">
+            <xs:selector xpath="person"/>
+            <xs:field xpath="name/given"/>
+            <xs:field xpath="name/family"/>
+        </xs:unique>
+        <xs:key name="empid">
+            <xs:selector xpath="person"/>
+            <xs:field xpath="@id"/>
+        </xs:key>
+        <xs:keyref name="keyref1" refer="empid">
+            <xs:selector xpath="person"/>
+            <xs:field xpath="link/@manager"/>
+        </xs:keyref>
+    </xs:element>
+
+    <xs:attribute name="testAttr" type="xs:string" fixed="test-value"/>
+    <xs:attributeGroup name="testAttrGroup">
+        <xs:attribute ref="testAttr" use="required"/>
+    </xs:attributeGroup>
+
+    <xs:element name="person">
+        <xs:annotation>
+            <xs:documentation>Specify information about a person.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="name"/>
+                <xs:element ref="email" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="url" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="link" minOccurs="0" maxOccurs="1"/>
+            </xs:sequence>
+
+            <xs:attribute name="id" type="xs:ID" use="required">
+                <xs:annotation>
+                    <xs:documentation>Specify a required unique ID for this person.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="note" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>If there is anything to note about this person.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="contr" default="false">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="true"/>
+                        <xs:enumeration value="false"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="salary" type="xs:integer" form="qualified" use="required">
+                <xs:annotation>
+                    <xs:documentation>Specifies the salary for this person.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+
+            <xs:attributeGroup ref="testAttrGroup"/>
+
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="name">
+        <xs:annotation>
+            <xs:documentation>Specify the person family and given name.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:all>
+                <xs:element ref="family"/>
+                <xs:element ref="given"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="family" type="xs:string">
+        <xs:annotation>
+            <xs:documentation>The person last name.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
+    <xs:element name="given" type="xs:string">
+        <xs:annotation>
+            <xs:documentation>The person first name.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
+    <xs:element name="email" type="xs:string">
+        <xs:annotation>
+            <xs:documentation>Email address for this person.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
+    <xs:element name="url">
+        <xs:annotation>
+            <xs:documentation>Enter an URL for this person.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="href" type="xs:string" default="http://">
+                <xs:annotation>
+                    <xs:documentation>Enter an URL for this person.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="link">
+        <xs:annotation>
+            <xs:documentation>Specify who is the manager and who are the subordinates for this person.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="manager" type="xs:IDREF">
+                <xs:annotation>
+                    <xs:documentation>The manager ID.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="subordinates" type="xs:IDREFS">
+                <xs:annotation>
+                    <xs:documentation>Space separated list with the subordinates IDs.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:notation name="gif" public="-//APP/Photoshop/4.0" system="photoshop.exe"/>
+
+
+</xs:schema>

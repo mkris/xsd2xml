@@ -1,0 +1,569 @@
+<!--
+  ~ Copyright (c) 2010-2014 Stratumsoft Technologies Pvt. Ltd.
+  ~
+  ~ This file (catalog.xsd) is part of xsd2xml.
+  ~
+  ~ xsd2xml is a Java program to generate XML instances from an XML Schema document
+  ~
+  ~ xsd2xml is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation; either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ xsd2xml is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program; If not, see <http://www.gnu.org/licenses/>.
+  ~
+  ~ To use xsd2xml in your non-GPL licensed software, contact Stratumsoft Technologies
+  ~ support at support@stratumsoft.com or visit http://www.stratumsoft.com to obtain
+  ~ a commercial license.
+  -->
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+<xsd:include schemaLocation="pricing.xsd"/>
+<xsd:include schemaLocation="sequence.xsd"/>
+
+<xsd:simpleType name="partNameType"
+                final="#all"
+                id="catalog.partName.sType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            A part name can be almost anything.
+            The name is a short description.
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token"
+                     id="pnt-rst">
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="40"/>
+    </xsd:restriction>
+</xsd:simpleType>
+
+<xsd:simpleType name="partNumberType"
+                final="union"
+                id="catalog.partNumber.sType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            Declaration of a part number.
+            Each part number consists of one to
+            three alphabetic characters followed by
+            one to eight digits. The following part
+            numbers, for example, are valid:
+                J1
+                ABC32897
+                ZZ22233344
+        </xsd:documentation>
+    </xsd:annotation>
+        <xsd:restriction base="xsd:token">
+            <xsd:pattern value="[A-Z]{1,3}\d{1,8}"/>
+        </xsd:restriction>
+</xsd:simpleType>
+
+<xsd:simpleType name="unitPartNumberType"
+                final="#all"
+                id="catalog.unitpartNumber.sType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            A "unit" part defines small parts,
+            not bulk items or assemblies.
+            The "unitPartNumberType" describes the
+            pattern for unit items.
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="partNumberType">
+        <xsd:pattern
+             value="(([^AB])|(B[^L])|(BL[^K])|(A[^S])|(AS[^M])).*"/>
+    </xsd:restriction>
+</xsd:simpleType>
+
+<xsd:simpleType name="bulkPartNumberType"
+                final="#all"
+                id="catalog.bulkpartNumber.sType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            A "bulk" part represents a quantity
+            of "unit" parts.  The
+            "bulkPartNumberType" describes the
+            part number for bulk items.
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="partNumberType">
+        <xsd:length value="7" fixed="true"/>
+        <xsd:pattern value="BLK.*"/>
+        <xsd:enumeration value="BLK2088"/>
+        <xsd:enumeration value="BLK2089"/>
+    </xsd:restriction>
+</xsd:simpleType>
+
+<xsd:simpleType name="assemblyPartNumberType"
+                final="restriction"
+                id="catalog.assemblypartNumber.sType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            An "assembly" represents a pre-built
+            collection of unit items.  The
+            part number for an assembly
+            always starts with "ASM."
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="partNumberType">
+        <xsd:pattern value="ASM\d{1,8}"/>
+    </xsd:restriction>
+</xsd:simpleType>
+
+<xsd:simpleType name="partNumberListType"
+                id="catalog.partNumber.list.sType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            The "partNumberListType" describes the value
+            for an element that contains a set of part
+            numbers.  Given that a part number might look
+            like any of the following:
+                J1
+                ABC32897
+                ZZ22233344
+           A list of these part numbers might look like:
+                J1 ABC32897 ZZ22233344
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:list id="transaction.partNumberList"
+              itemType="partNumberType">
+    </xsd:list>
+</xsd:simpleType>
+
+<xsd:simpleType name="colorOptionType"
+                id="catalog.colorOption.union.sType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            A part has one of the following color definitions:
+                - a standard name (cyan, yellow, etc.),
+                - a fanciful name (Ocean, Sunshine, etc.), or
+                - an internal code 1..n
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:union id="colorOptionType.union">
+
+        <xsd:simpleType>
+            <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                    Color selection is limited.
+                    The colors apply to unit and
+                    bulk items.
+                </xsd:documentation>
+            </xsd:annotation>
+            <xsd:restriction base="xsd:token">
+                <xsd:enumeration value="cyan"/>
+                <xsd:enumeration value="magenta"/>
+                <xsd:enumeration value="yellow"/>
+                <xsd:enumeration value="black"/>
+            </xsd:restriction>
+        </xsd:simpleType>
+
+        <xsd:simpleType>
+            <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                    Color selection is limited.
+                    The colors apply to unit and
+                    bulk items.
+                </xsd:documentation>
+            </xsd:annotation>
+            <xsd:restriction base="xsd:token">
+                <xsd:enumeration value="Ocean"/>
+                <xsd:enumeration value="Pink Grapefruit"/>
+                <xsd:enumeration value="Sunshine"/>
+                <xsd:enumeration value="Midnight"/>
+            </xsd:restriction>
+        </xsd:simpleType>
+
+        <xsd:simpleType>
+            <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                    A color can be defined by an
+                    internal integer that maps
+                    directly to a standard or
+                    fanciful color
+                    1 = cyan = Ocean
+                    2 = magenta = Pink Grapefruit
+                    etc.
+                </xsd:documentation>
+            </xsd:annotation>
+            <xsd:restriction base="xsd:positiveInteger">
+                <xsd:maxInclusive value="4"/>
+            </xsd:restriction>
+        </xsd:simpleType>
+
+    </xsd:union>
+</xsd:simpleType>
+
+<xsd:simpleType name="sizeOptionType"
+                final="#all"
+                id="catalog.sizeOption.sType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            Size selection is limited.
+            The sizes apply to unit and
+            bulk items.
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+        <xsd:enumeration value="tiny"/>
+        <xsd:enumeration value="small"/>
+        <xsd:enumeration value="medium"/>
+        <xsd:enumeration value="large"/>
+        <xsd:enumeration value="grandiose"/>
+    </xsd:restriction>
+</xsd:simpleType>
+
+<xsd:complexType name="partOptionType"
+                 block="#all"
+                 final="#all"
+                 id="partOptionType.catalog.cType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            Appropriate parts can have a color,
+            a size, or both.  Note that the use
+            of the "all" element indicates that
+            the "color" and "size" are unordered.
+            That is, they can appear in either
+            order.
+                -- Shorthand Notation --
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:all id="pot.all">
+        <xsd:element name="color"
+                     type="colorOptionType"
+                     minOccurs="0"
+                     maxOccurs="1"/>
+        <xsd:element name="size"
+                     type="sizeOptionType"
+                     minOccurs="0"
+                     maxOccurs="1"/>
+    </xsd:all>
+</xsd:complexType>
+
+<xsd:complexType name="customerReviewType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            The customer review provides a place to
+            attach customer feedback to catalog items.
+                -- Shorthand Notation --
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+        <xsd:element name="customerName">
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:whiteSpace value="collapse"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:element>
+        <xsd:element name="customerFeedback">
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:whiteSpace value="preserve"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:element>
+    </xsd:sequence>
+</xsd:complexType>
+
+<xsd:complexType name="catalogEntryDescriptionType"
+                 mixed="true"
+                 id="catalogEntryDescriptionType.catalog.cType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            Allow the description of a part
+            to include part number references.
+            The "catalogEntryDescriptionType"
+            is a good example of a complex type
+            with "mixed" content.
+                -- Shorthand Notation --
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+        <xsd:element name="partList" type="partNumberListType"/>
+    </xsd:sequence>
+</xsd:complexType>
+
+<xsd:complexType name="baseCatalogEntryType"
+                 abstract="true"
+                 id="baseCatalogEntryType.catalog.cType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            A catalog entry must have:
+                * A database ID
+                * Part Name
+                * Part Number
+                * Options available
+                * Description
+                * Price
+                * Included Quantity when ordering
+                  one item.
+            The "baseCatalogEntryType" is
+            noninstantiable:  a derived type must
+            be created before a catalog
+            entry can be instantiated.
+                -- Shorthand Notation --
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence id="bacet-seq">
+        <xsd:element ref="sequenceID"/>
+        <xsd:element name="partName" type="partNameType"/>
+        <xsd:element name="partNumber" type="partNumberType"/>
+        <xsd:element name="partOption"
+                     type="partOptionType"
+                     minOccurs="0"/>
+        <xsd:element name="description"
+                     type="catalogEntryDescriptionType"/>
+        <xsd:group ref="priceGroup"/>
+        <xsd:element name="includedQuantity"
+                     type="xsd:positiveInteger"/>
+        <xsd:element name="customerReview"
+                     type="customerReviewType"
+                     minOccurs="0"
+                     maxOccurs="unbounded"/>
+    </xsd:sequence>
+</xsd:complexType>
+
+<xsd:complexType name="unitCatalogEntryType"
+                 block="#all"
+                 final="#all"
+                 id="unitCatalogEntryType.catalog.cType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            A unit item contains nothing more
+            or less than a basic catalog entry ID:
+                * A database ID
+                * Part Name
+                * Part Number
+                * Options available
+                * Price
+                * Included Quantity when ordering
+                  one item (always one for unit items).
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent id="ucet.cc">
+        <xsd:restriction base="baseCatalogEntryType">
+            <xsd:sequence>
+                <xsd:element ref="unitID"/>
+                <xsd:element name="partName"
+                             type="partNameType"/>
+                <xsd:element name="partNumber"
+                             type="unitPartNumberType"/>
+                <xsd:element name="partOption"
+                             type="partOptionType"
+                             minOccurs="1"/>
+                <xsd:element name="description"
+                             type="catalogEntryDescriptionType"/>
+                <xsd:group ref="priceGroup"/>
+                <xsd:element name="includedQuantity"
+                             type="xsd:positiveInteger"
+                             fixed="1"/>
+                <xsd:element name="customerReview"
+                             type="customerReviewType"
+                             minOccurs="0"
+                             maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:restriction>
+    </xsd:complexContent>
+</xsd:complexType>
+
+<xsd:complexType name="bulkCatalogEntryType"
+                 block="#all"
+                 final="#all"
+                 id="bulkCatalogEntryType.catalog.cType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            A bulk item is just like any
+            other, except that the part
+            number is restricted to a
+            bulk part number.
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+        <xsd:restriction base="baseCatalogEntryType">
+            <xsd:sequence>
+                <xsd:element ref="bulkID"/>
+                <xsd:element name="partName" type="partNameType"/>
+                <xsd:element name="partNumber" type="bulkPartNumberType"/>
+                <xsd:element name="partOption" type="partOptionType" minOccurs="1"/>
+                <xsd:element name="description"
+                             type="catalogEntryDescriptionType"/>
+                <xsd:group ref="priceGroup"/>
+                <xsd:element name="includedQuantity"
+                             type="xsd:positiveInteger"/>
+                <xsd:element name="customerReview"
+                             type="customerReviewType"
+                             minOccurs="0"
+                             maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:restriction>
+    </xsd:complexContent>
+</xsd:complexType>
+
+<xsd:complexType name="baseAssemblyCatalogEntryType"
+                 abstract="true"
+                 block="#all"
+                 id="baseAssemblyCatalogEntryType.catalog.cType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            An assembled item is similar to the
+            other catalog entries.  The part number
+            is restricted to an assembly number.
+            In addition, there may be no options.
+            Finally, a part list is also needed.
+            Note that the "includedQuantity" has
+            a default of one, but can be overridden
+            in instances.
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+        <xsd:restriction base="baseCatalogEntryType"
+                         id="bacet.rst">
+            <xsd:sequence>
+                <xsd:element ref="assemblyID"/>
+                <xsd:element name="partName"
+                             type="partNameType"/>
+                <xsd:element name="partNumber"
+                             type="assemblyPartNumberType"/>
+                <xsd:element name="partOption"
+                             type="partOptionType"
+                             minOccurs="0"
+                             maxOccurs="0"/>
+                <xsd:element name="description"
+                             type="catalogEntryDescriptionType"/>
+                <xsd:group ref="priceGroup"/>
+                <xsd:element name="includedQuantity"
+                             type="xsd:positiveInteger"
+                             default="1"/>
+                <xsd:element name="customerReview"
+                             type="customerReviewType"
+                             minOccurs="0"
+                             maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:restriction>
+    </xsd:complexContent>
+</xsd:complexType>
+
+<xsd:complexType name="assemblyCatalogEntryType"
+                 block="#all"
+                 final="#all"
+                 id="assemblyCatalogEntryType.catalog.cType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            The actual definition of an assembly,
+            including the contained parts.
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+        <xsd:extension base="baseAssemblyCatalogEntryType"
+                       id="acet.ext">
+            <xsd:sequence>
+                <xsd:element name="partList" type="partNumberListType"/>
+                <xsd:element name="status" type="assemblyPartStatusType"/>
+            </xsd:sequence>
+        </xsd:extension>
+    </xsd:complexContent>
+</xsd:complexType>
+
+<xsd:simpleType name="assemblyPartStatusType"
+                id="catalog.assemblyPartStatusType.union.sType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            A part status depends upon whether it is
+            pre-production, in production, or no longer
+            being manufactured.
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:union id="assemblyPartStatus.union"
+               memberTypes="assemblyPartNumberType">
+
+        <xsd:simpleType>
+            <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                    The pre-production status is an
+                    enumeration of the statuses prior
+                    to manufacturing.
+                     1 = roughed
+                     2 = designed
+                     3 = prototyped
+                     4 = approved
+                </xsd:documentation>
+            </xsd:annotation>
+            <xsd:restriction base="xsd:positiveInteger">
+                <xsd:maxInclusive value="4"/>
+            </xsd:restriction>
+        </xsd:simpleType>
+
+        <xsd:simpleType>
+            <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                    The date the part was last manufactured.
+                    The company first manufactured a part on
+                    2000-01-01.
+                </xsd:documentation>
+            </xsd:annotation>
+            <xsd:restriction base="xsd:date">
+                <xsd:minInclusive value="2000-01-01"/>
+            </xsd:restriction>
+        </xsd:simpleType>
+
+    </xsd:union>
+</xsd:simpleType>
+
+<xsd:complexType name="finalCatalogType"
+                 id="finalCatalogType.catalog.cType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            This catalog type permits catalog
+            entry types to be created without
+            making any changes to this type.
+            These additions are possible because
+            "finalCatalogType" contains only the
+            noninstantiable base class.
+                -- Shorthand Notation --
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence minOccurs="1"
+                  maxOccurs="unbounded">
+        <xsd:element name="part"
+                     type="baseCatalogEntryType"/>
+    </xsd:sequence>
+</xsd:complexType>
+
+<xsd:complexType name="catalogType"
+                 id="catalogType.catalog.cType">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            This catalog type must be altered
+            every time a new catalog entry
+            type is created.  The
+            "catalogType2" complex type refers
+            only instantiable derived classes.
+                -- Shorthand Notation --
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice minOccurs="1"
+                maxOccurs="unbounded">
+        <xsd:element name="unitPart"
+                     type="unitCatalogEntryType"
+                     block="restriction extension"/>
+        <xsd:element name="bulkPart"
+                     type="bulkCatalogEntryType"
+                     block="restriction extension"/>
+        <xsd:element name="assemblyPart"
+                     type="assemblyCatalogEntryType"
+                     block="restriction extension"/>
+    </xsd:choice>
+</xsd:complexType>
+    
+<xsd:element name="catalog" type="catalogType"/>
+    <xsd:element name="description"
+        type="catalogEntryDescriptionType"/>
+
+</xsd:schema>

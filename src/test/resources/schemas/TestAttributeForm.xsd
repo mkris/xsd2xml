@@ -1,0 +1,62 @@
+<!--
+  ~ Copyright (c) 2010-2014 Stratumsoft Technologies Pvt. Ltd.
+  ~
+  ~ This file (TestAttributeForm.xsd) is part of xsd2xml.
+  ~
+  ~ xsd2xml is a Java program to generate XML instances from an XML Schema document
+  ~
+  ~ xsd2xml is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation; either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ xsd2xml is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program; If not, see <http://www.gnu.org/licenses/>.
+  ~
+  ~ To use xsd2xml in your non-GPL licensed software, contact Stratumsoft Technologies
+  ~ support at support@stratumsoft.com or visit http://www.stratumsoft.com to obtain
+  ~ a commercial license.
+  -->
+
+<xsd:schema
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:xse="http://www.XMLSchemaReference.com/examples"
+        xmlns="http://www.XMLSchemaReference.com/examples"
+        targetNamespace=
+                "http://www.XMLSchemaReference.com/examples"
+        xmlns:ns1="http://example.com"
+        elementFormDefault="unqualified"
+        attributeFormDefault="unqualified">
+    
+    <xsd:import namespace="http://example.com" schemaLocation="TestAttributeFormImport.xsd"/>
+
+    <xsd:element name="formAttributeDemo">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="abusedElement">
+                    <xsd:complexType>
+                        <xsd:attribute name="nsUnqualified"
+                                       type="xsd:string"
+                                       form="unqualified"/>
+                        
+                        <xsd:attribute ref="ns1:AttrImport"/>
+                        
+                        <xsd:attribute name="nsQualified"
+                                       type="xsd:string"
+                                       form="qualified"/>
+                        
+                        <xsd:attribute name="nsDefault"
+                                       type="xsd:string"/>
+                        
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>

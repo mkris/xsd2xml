@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2010-2014 Stratumsoft Technologies Pvt. Ltd.
+  ~
+  ~ This file (person.xsd) is part of xsd2xml.
+  ~
+  ~ xsd2xml is a Java program to generate XML instances from an XML Schema document
+  ~
+  ~ xsd2xml is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation; either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ xsd2xml is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program; If not, see <http://www.gnu.org/licenses/>.
+  ~
+  ~ To use xsd2xml in your non-GPL licensed software, contact Stratumsoft Technologies
+  ~ support at support@stratumsoft.com or visit http://www.stratumsoft.com to obtain
+  ~ a commercial license.
+  -->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="qualification" type="xs:token"/>
+    <xs:element name="born" type="xs:date"/>
+    <xs:element name="dead" type="xs:date"/>
+    <xs:element name="simple-name" type="xs:token"/>
+    <xs:element name="first-name" type="xs:token"/>
+    <xs:element name="middle-name" type="xs:token"/>
+    <xs:element name="last-name" type="xs:token"/>
+    <xs:attribute name="id" type="xs:ID"/>
+    <xs:element name="name">
+        <xs:complexType>
+            <xs:choice>
+                <xs:element ref="simple-name"/>
+                <xs:element ref="complex-name"/>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="complex-name">
+        <xs:complexType>
+            <xs:all>
+                <xs:element ref="first-name"/>
+                <xs:element ref="middle-name" minOccurs="0"/>
+                <xs:element ref="last-name"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="person">
+        <xs:sequence>
+            <xs:element ref="name"/>
+            <xs:element ref="born"/>
+            <xs:element ref="dead" minOccurs="0"/>
+            <xs:element ref="qualification" minOccurs="0"/>
+        </xs:sequence>
+
+        <xs:attribute ref="id"/>
+    </xs:complexType>
+    <xs:element name="author">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:restriction base="person">
+                    <xs:sequence>
+                        <xs:element ref="name"/>
+                        <xs:element ref="born"/>
+                        <xs:element ref="dead" minOccurs="0"/>
+                    </xs:sequence>
+
+                </xs:restriction>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="character">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:restriction base="person">
+                    <xs:sequence>
+                        <xs:element ref="name"/>
+                        <xs:element ref="born"/>
+                        <xs:element ref="qualification"/>
+                    </xs:sequence>
+                </xs:restriction>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
